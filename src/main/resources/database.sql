@@ -1,7 +1,7 @@
--- 1. Désactiver la vérification des clés étrangères
+-- 1. Désactiver la vérification des clés étrangères pour permettre les suppressions de tables sans contraintes
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Supprimer les tables dans l'ordre correct
+-- 2. Supprimer les tables dans l'ordre correct
 DROP TABLE IF EXISTS historique_commande;
 DROP TABLE IF EXISTS track_commande;
 DROP TABLE IF EXISTS details_commande;
@@ -9,10 +9,10 @@ DROP TABLE IF EXISTS licence_track;
 DROP TABLE IF EXISTS track;
 DROP TABLE IF EXISTS account;
 
--- 2. Réactiver la vérification des clés étrangères
+-- 3. Réactiver la vérification des clés étrangères
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Création des tables dans le bon ordre :
+-- Création des tables en respectant les relations et les contraintes
 
 -- Table account
 CREATE TABLE account (
@@ -20,6 +20,7 @@ CREATE TABLE account (
     nom VARCHAR(255) NOT NULL,
     prenom VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     pseudo VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL,
     adresse_facturation TEXT,
@@ -41,9 +42,9 @@ CREATE TABLE track (
     type VARCHAR(50) NOT NULL,
     audio VARCHAR(255) NOT NULL,  -- lien vers l'audio
     statut VARCHAR(50),
-    jaime VARCHAR(255),  -- "like" devient "jaime"
+    jaime VARCHAR(255),  -- "like" renommé en "jaime"
     cover VARCHAR(255) NOT NULL,  -- lien vers l'image de couverture
-    id_account INT,
+    id_account INT NOT NULL,
     FOREIGN KEY (id_account) REFERENCES account(id_account) ON DELETE CASCADE
 );
 
@@ -51,7 +52,7 @@ CREATE TABLE track (
 CREATE TABLE licence_track (
     id_licence_track INT PRIMARY KEY AUTO_INCREMENT,
     type VARCHAR(255) NOT NULL,  -- type de licence (exclusif, non-exclusif)
-    id_track INT,
+    id_track INT NOT NULL,
     FOREIGN KEY (id_track) REFERENCES track(id_track) ON DELETE CASCADE
 );
 
@@ -60,15 +61,15 @@ CREATE TABLE details_commande (
     id_detail_commande INT PRIMARY KEY AUTO_INCREMENT,
     prix_total VARCHAR(20) NOT NULL,
     nombre_total VARCHAR(20) NOT NULL,
-    id_account INT,
+    id_account INT NOT NULL,
     FOREIGN KEY (id_account) REFERENCES account(id_account) ON DELETE CASCADE
 );
 
 -- Table track_commande (jointure entre track et details_commande)
 CREATE TABLE track_commande (
     id_track_commande INT PRIMARY KEY AUTO_INCREMENT,
-    id_track INT,
-    id_detail_commande INT,
+    id_track INT NOT NULL,
+    id_detail_commande INT NOT NULL,
     FOREIGN KEY (id_track) REFERENCES track(id_track) ON DELETE CASCADE,
     FOREIGN KEY (id_detail_commande) REFERENCES details_commande(id_detail_commande) ON DELETE CASCADE
 );
@@ -78,18 +79,18 @@ CREATE TABLE historique_commande (
     id_historique_commande INT PRIMARY KEY AUTO_INCREMENT,
     date DATETIME NOT NULL,
     prix VARCHAR(20) NOT NULL,
-    id_account INT,
+    id_account INT NOT NULL,
     FOREIGN KEY (id_account) REFERENCES account(id_account) ON DELETE CASCADE
 );
 
--- Insertion de plusieurs utilisateurs (account)
-INSERT INTO account (nom, prenom, email, pseudo, type, adresse_facturation, adresse_livraison, avatar, telephone)
+-- Insertion de plusieurs utilisateurs (account) avec mot de passe haché en MD5
+INSERT INTO account (nom, prenom, email, password, pseudo, type, adresse_facturation, adresse_livraison, avatar, telephone)
 VALUES
-('Doe', 'John', 'john.doe@example.com', 'johndoe', 'acheteur', '123 Rue Principale', '456 Rue Secondaire', 'avatar1.png', '555-1234'),
-('Smith', 'Jane', 'jane.smith@example.com', 'janesmith', 'vendeur', '789 Rue Principale', '987 Rue Tertiaire', 'avatar2.png', '555-5678'),
-('Brown', 'Michael', 'michael.brown@example.com', 'mikebrown', 'acheteur', '111 Rue Colline', '222 Rue Vallée', 'avatar3.png', '555-9988'),
-('Davis', 'Laura', 'laura.davis@example.com', 'lauradavis', 'vendeur', '333 Rue Foret', '444 Rue Mer', 'avatar4.png', '555-7766'),
-('Johnson', 'Chris', 'chris.johnson@example.com', 'chrisjohn', 'acheteur', '555 Rue Montagne', '666 Rue Lac', 'avatar5.png', '555-1122');
+('Doe', 'John', 'john.doe@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 'johndoe', 'acheteur', '123 Rue Principale', '456 Rue Secondaire', 'avatar1.png', '555-1234'),
+('Smith', 'Jane', 'jane.smith@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 'janesmith', 'vendeur', '789 Rue Principale', '987 Rue Tertiaire', 'avatar2.png', '555-5678'),
+('Brown', 'Michael', 'michael.brown@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 'mikebrown', 'acheteur', '111 Rue Colline', '222 Rue Vallée', 'avatar3.png', '555-9988'),
+('Davis', 'Laura', 'laura.davis@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 'lauradavis', 'vendeur', '333 Rue Foret', '444 Rue Mer', 'avatar4.png', '555-7766'),
+('Johnson', 'Chris', 'chris.johnson@example.com', '81dc9bdb52d04dc20036dbd8313ed055', 'chrisjohn', 'acheteur', '555 Rue Montagne', '666 Rue Lac', 'avatar5.png', '555-1122');
 
 -- Insertion de plusieurs pistes musicales (track)
 INSERT INTO track (titre, date, bpm, description, cle, prix, genre, type, audio, statut, jaime, cover, id_account)
