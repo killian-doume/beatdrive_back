@@ -90,6 +90,52 @@ public class AccountRepo {
         return false;
     }
 
+    public boolean update(account account) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE account SET nom=?, prenom=?, email=?, password=?, pseudo=?, type=?, adresse_facturation=?, adresse_livraison=?, avatar=?, telephone=? WHERE id_account=?");
+
+            stmt.setString(1, account.getNom());
+            stmt.setString(2, account.getPrenom());
+            stmt.setString(3, account.getEmail());
+            stmt.setString(4, account.getPassword());
+            stmt.setString(5, account.getPseudo());
+            stmt.setString(6, account.getType());
+            stmt.setString(7, account.getAdresse_facturation());
+            stmt.setString(8, account.getAdresse_livraison());
+            stmt.setString(9, account.getAvatar());
+            stmt.setString(10, account.getTelephone());
+            stmt.setInt(11, account.getId_account());
+
+            if (stmt.executeUpdate() == 1) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error in repository", e);
+        }
+
+        return false;
+    }
+
+    public boolean delete(int id_account) {
+        String sql = "DELETE FROM account WHERE id_account = ?";
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, id_account);
+
+            if (stmt.executeUpdate() == 1) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error in repository", e);
+        }
+
+        return false;
+    }
+
     private account sqlToUser(ResultSet rs) throws SQLException {
         return new account(
                 rs.getInt("id_account"),
