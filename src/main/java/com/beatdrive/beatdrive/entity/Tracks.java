@@ -1,14 +1,12 @@
 package com.beatdrive.beatdrive.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class Track {
+public class Tracks {
 
-    private Integer id_track;
+    private Integer id_tracks;
     @NotBlank
     private String titre;
     private LocalDateTime date;
@@ -30,12 +28,12 @@ public class Track {
     private String cover;
     private User users;
 
-    public Integer getId_track() {
-        return id_track;
+    public Integer getId_tracks() {
+        return id_tracks;
     }
 
-    public void setId_track(Integer id_track) {
-        this.id_track = id_track;
+    public void setId_tracks(Integer id_tracks) {
+        this.id_tracks = id_tracks;
     }
 
     public String getTitre() {
@@ -134,7 +132,25 @@ public class Track {
         this.users = users;
     }
 
-    public Track(@NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
+    public Tracks(Integer id_tracks, @NotBlank String titre, LocalDateTime date, @NotBlank String bpm,
+            String description, @NotBlank String cle, @NotBlank String genre, @NotBlank String type,
+            @NotBlank String audio, @NotBlank String status, String like, @NotBlank String cover, User users) {
+        this.id_tracks = id_tracks;
+        this.titre = titre;
+        this.date = date;
+        this.bpm = bpm;
+        this.description = description;
+        this.cle = cle;
+        this.genre = genre;
+        this.type = type;
+        this.audio = audio;
+        this.status = status;
+        this.like = like;
+        this.cover = cover;
+        this.users = users;
+    }
+
+    public Tracks(@NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
             @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
             @NotBlank String status, String like, @NotBlank String cover, User users) {
         this.titre = titre;
@@ -151,24 +167,7 @@ public class Track {
         this.users = users;
     }
 
-    public Track() {
+    public Tracks() {
     }
 
-    public Track(Integer id_track, @NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
-            @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
-            @NotBlank String status, String like, @NotBlank String cover, User users) {
-        this.id_track = id_track;
-        this.titre = titre;
-        this.date = date;
-        this.bpm = bpm;
-        this.description = description;
-        this.cle = cle;
-        this.genre = genre;
-        this.type = type;
-        this.audio = audio;
-        this.status = status;
-        this.like = like;
-        this.cover = cover;
-        this.users = users;
-    }
 }
