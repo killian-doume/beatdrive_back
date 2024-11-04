@@ -1,19 +1,19 @@
 package com.beatdrive.beatdrive.entity;
 
+import java.util.Collection;
+import java.util.List;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.List;
-import java.util.Collection;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class account implements UserDetails {
+public class User implements UserDetails {
 
-    private Integer id_account;
+    private Integer id_user;
     private String nom;
     private String prenom;
     @Email
@@ -32,12 +32,12 @@ public class account implements UserDetails {
     @NotBlank
     private String telephone;
 
-    public Integer getId_account() {
-        return id_account;
+    public Integer getId_user() {
+        return id_user;
     }
 
-    public void setId_account(Integer id_account) {
-        this.id_account = id_account;
+    public void setId_user(Integer id_user) {
+        this.id_user = id_user;
     }
 
     public String getNom() {
@@ -120,23 +120,7 @@ public class account implements UserDetails {
         this.telephone = telephone;
     }
 
-    public account(Integer id_account, String nom, String prenom, @Email @NotBlank String email,
-            @Length(min = 4) String password, @NotBlank String pseudo, @NotBlank String type,
-            String adresse_facturation, String adresse_livraison, String avatar, @NotBlank String telephone) {
-        this.id_account = id_account;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.email = email;
-        this.password = password;
-        this.pseudo = pseudo;
-        this.type = type;
-        this.adresse_facturation = adresse_facturation;
-        this.adresse_livraison = adresse_livraison;
-        this.avatar = avatar;
-        this.telephone = telephone;
-    }
-
-    public account(String nom, String prenom, @Email @NotBlank String email, @Length(min = 4) String password,
+    public User(String nom, String prenom, @Email @NotBlank String email, @Length(min = 4) String password,
             @NotBlank String pseudo, @NotBlank String type, String adresse_facturation, String adresse_livraison,
             String avatar, @NotBlank String telephone) {
         this.nom = nom;
@@ -151,9 +135,28 @@ public class account implements UserDetails {
         this.telephone = telephone;
     }
 
-    public account() {
+    public User() {
     }
 
+    public User(Integer id_user, String nom, String prenom, @Email @NotBlank String email,
+            @Length(min = 4) String password, @NotBlank String pseudo, @NotBlank String type,
+            String adresse_facturation, String adresse_livraison, String avatar, @NotBlank String telephone) {
+        this.id_user = id_user;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.password = password;
+        this.pseudo = pseudo;
+        this.type = type;
+        this.adresse_facturation = adresse_facturation;
+        this.adresse_livraison = adresse_livraison;
+        this.avatar = avatar;
+        this.telephone = telephone;
+    }
+
+    // Les méthodes ci dessous sont nécessaire pour que notre classe soit considérée
+    // comme un User valide par Spring Boot, ça sera toujours peu ou proue la même
+    // chose
     @JsonProperty(access = Access.READ_ONLY)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -185,4 +188,5 @@ public class account implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

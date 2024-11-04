@@ -6,7 +6,7 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class track {
+public class Track {
 
     private Integer id_track;
     @NotBlank
@@ -18,8 +18,6 @@ public class track {
     @NotBlank
     private String cle;
     @NotBlank
-    private String prix;
-    @NotBlank
     private String genre;
     @NotBlank
     private String type;
@@ -30,7 +28,7 @@ public class track {
     private String like;
     @NotBlank
     private String cover;
-    private List<account> accounts = new ArrayList<>();
+    private User users;
 
     public Integer getId_track() {
         return id_track;
@@ -78,14 +76,6 @@ public class track {
 
     public void setCle(String cle) {
         this.cle = cle;
-    }
-
-    public String getPrix() {
-        return prix;
-    }
-
-    public void setPrix(String prix) {
-        this.prix = prix;
     }
 
     public String getGenre() {
@@ -136,51 +126,49 @@ public class track {
         this.cover = cover;
     }
 
-    public List<account> getAccounts() {
-        return accounts;
+    public User getUsers() {
+        return users;
     }
 
-    public void setAccounts(List<account> accounts) {
-        this.accounts = accounts;
+    public void setUsers(User users) {
+        this.users = users;
     }
 
-    public track(String titre, LocalDateTime date, String bpm, String description, String cle, String prix,
-            String genre, String type, String audio, String status, String like, String cover, List<account> accounts) {
+    public Track(@NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
+            @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
+            @NotBlank String status, String like, @NotBlank String cover, User users) {
         this.titre = titre;
         this.date = date;
         this.bpm = bpm;
         this.description = description;
         this.cle = cle;
-        this.prix = prix;
         this.genre = genre;
         this.type = type;
         this.audio = audio;
         this.status = status;
         this.like = like;
         this.cover = cover;
-        this.accounts = accounts;
+        this.users = users;
     }
 
-    public track() {
+    public Track() {
     }
 
-    public track(Integer id_track, String titre, LocalDateTime date, String bpm, String description, String cle,
-            String prix, String genre, String type, String audio, String status, String like, String cover,
-            List<account> accounts) {
+    public Track(Integer id_track, @NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
+            @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
+            @NotBlank String status, String like, @NotBlank String cover, User users) {
         this.id_track = id_track;
         this.titre = titre;
         this.date = date;
         this.bpm = bpm;
         this.description = description;
         this.cle = cle;
-        this.prix = prix;
         this.genre = genre;
         this.type = type;
         this.audio = audio;
         this.status = status;
         this.like = like;
         this.cover = cover;
-        this.accounts = accounts;
+        this.users = users;
     }
-
 }
