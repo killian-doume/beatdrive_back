@@ -4,20 +4,31 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class track {
 
     private Integer id_track;
+    @NotBlank
     private String titre;
     private LocalDateTime date;
+    @NotBlank
     private String bpm;
     private String description;
+    @NotBlank
     private String cle;
+    @NotBlank
     private String prix;
+    @NotBlank
     private String genre;
+    @NotBlank
     private String type;
+    @NotBlank
     private String audio;
+    @NotBlank
     private String status;
     private String like;
+    @NotBlank
     private String cover;
     private List<account> accounts = new ArrayList<>();
 
