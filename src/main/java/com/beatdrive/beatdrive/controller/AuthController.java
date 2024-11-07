@@ -1,17 +1,26 @@
 package com.beatdrive.beatdrive.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.beatdrive.beatdrive.entity.User;
 import com.beatdrive.beatdrive.repository.UserRepo.UserRepository;
 
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Optional;
 
+@CrossOrigin("*")
 @RestController
 public class AuthController {
 
@@ -37,30 +46,20 @@ public class AuthController {
         return repo.findAll();
     }
 
+    // Utilisation de la méthode simplifiée pour la mise à jour d'un utilisateur
     @PutMapping("/api/user/{id}")
     public User updateUser(@PathVariable int id, @Valid @RequestBody User user) {
-        Optional<User> utilisateurOptional = repo.findById(id);
-        if (utilisateurOptional.isPresent()) {
-            User utilisateur = utilisateurOptional.get();
-
-            utilisateur.setNom(user.getNom());
-            utilisateur.setPrenom(user.getPrenom());
-            utilisateur.setEmail(user.getEmail());
-            utilisateur.setPassword(user.getPassword());
-            utilisateur.setPseudo(user.getPseudo());
-            utilisateur.setType(user.getType());
-            utilisateur.setAdresse_facturation(user.getAdresse_facturation());
-            utilisateur.setAdresse_livraison(user.getAdresse_livraison());
-            utilisateur.setAvatar(user.getAvatar());
-            utilisateur.setTelephone(user.getTelephone());
-
-            if (repo.update(utilisateur)) {
-                return utilisateur;
-            } else {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update user");
-            }
-        } else {
+        if (!repo.findById(id).isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        // Assigne l'ID existant à l'objet User reçu
+        user.setId_user(id);
+
+        if (repo.update(user)) {
+            return user;
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update user");
         }
     }
 
