@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.beatdrive.beatdrive.entity.User;
 import com.beatdrive.beatdrive.repository.UserRepo.UserRepository;
-
 import jakarta.validation.Valid;
 
 @CrossOrigin("*")
@@ -46,16 +44,12 @@ public class AuthController {
         return repo.findAll();
     }
 
-    // Utilisation de la méthode simplifiée pour la mise à jour d'un utilisateur
     @PutMapping("/api/user/{id}")
     public User updateUser(@PathVariable int id, @Valid @RequestBody User user) {
         if (!repo.findById(id).isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
-
-        // Assigne l'ID existant à l'objet User reçu
         user.setId_user(id);
-
         if (repo.update(user)) {
             return user;
         } else {
