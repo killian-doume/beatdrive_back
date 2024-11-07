@@ -13,31 +13,31 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.beatdrive.beatdrive.entity.Details_commande;
+import com.beatdrive.beatdrive.entity.Detail_commande;
 import com.beatdrive.beatdrive.entity.Licence_track;
-import com.beatdrive.beatdrive.entity.Tracks;
-import com.beatdrive.beatdrive.entity.Tracks_commande;
+import com.beatdrive.beatdrive.entity.Track;
+import com.beatdrive.beatdrive.entity.Track_commande;
 import com.beatdrive.beatdrive.entity.User;
 
 @Repository
-public class Tracks_commandeRepo {
+public class Track_commandeRepo {
 
     @Autowired
     private DataSource dataSource;
 
     // CREATE
-    public boolean persist(Tracks_commande tracksCommande) {
+    public boolean persist(Track_commande tracksCommande) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO tracks_commande (licence_tracks_id, details_commande_id) VALUES (?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, tracksCommande.getLicence_tracks().getId_licence_tracks());
+            stmt.setInt(1, tracksCommande.getLicence_tracks().getId_licence_track());
             stmt.setInt(2, tracksCommande.getDetails_commande().getId_detail_commande());
 
             if (stmt.executeUpdate() > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                    tracksCommande.setId_tracks_commande(rs.getInt(1));
+                    tracksCommande.setId_track_commande(rs.getInt(1));
                     return true;
                 }
             }
@@ -49,8 +49,8 @@ public class Tracks_commandeRepo {
     }
 
     // READ ALL
-    public List<Tracks_commande> findAll() {
-        List<Tracks_commande> list = new ArrayList<>();
+    public List<Track_commande> findAll() {
+        List<Track_commande> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tracks_commande");
             ResultSet result = stmt.executeQuery();
@@ -66,7 +66,7 @@ public class Tracks_commandeRepo {
     }
 
     // READ BY ID
-    public Tracks_commande findById(int id) {
+    public Track_commande findById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection
                     .prepareStatement("SELECT * FROM tracks_commande WHERE id_tracks_commande = ?");
@@ -82,13 +82,13 @@ public class Tracks_commandeRepo {
     }
 
     // UPDATE
-    public boolean update(Tracks_commande tracksCommande) {
+    public boolean update(Track_commande tracksCommande) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE tracks_commande SET licence_tracks_id = ?, details_commande_id = ? WHERE id_tracks_commande = ?");
-            stmt.setInt(1, tracksCommande.getLicence_tracks().getId_licence_tracks());
+            stmt.setInt(1, tracksCommande.getLicence_tracks().getId_licence_track());
             stmt.setInt(2, tracksCommande.getDetails_commande().getId_detail_commande());
-            stmt.setInt(3, tracksCommande.getId_tracks_commande());
+            stmt.setInt(3, tracksCommande.getId_track_commande());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -111,7 +111,7 @@ public class Tracks_commandeRepo {
     }
 
     // Méthode utilitaire pour transformer un ResultSet en un objet Tracks_commande
-    private Tracks_commande sqlToTracksCommande(ResultSet result, Connection connection) throws SQLException {
+    private Track_commande sqlToTracksCommande(ResultSet result, Connection connection) throws SQLException {
         int licenceTrackId = result.getInt("licence_tracks_id");
         int detailsCommandeId = result.getInt("details_commande_id");
 
@@ -123,7 +123,7 @@ public class Tracks_commandeRepo {
             ResultSet licenceResult = licenceStmt.executeQuery();
             if (licenceResult.next()) {
                 // Récupérer l'objet Track et User pour Licence_track
-                Tracks track = null;
+                Track track = null;
                 int trackId = licenceResult.getInt("tracks_id");
                 try (PreparedStatement trackStmt = connection
                         .prepareStatement("SELECT * FROM tracks WHERE id_tracks = ?")) {
@@ -152,7 +152,7 @@ public class Tracks_commandeRepo {
                                         userResult.getString("telephone"));
                             }
                         }
-                        track = new Tracks(
+                        track = new Track(
                                 trackResult.getInt("id_tracks"),
                                 trackResult.getString("titre"),
                                 trackResult.getObject("date", LocalDateTime.class),
@@ -164,7 +164,6 @@ public class Tracks_commandeRepo {
                                 trackResult.getString("audio"),
                                 trackResult.getString("status"),
                                 trackResult.getString("like"),
-                                trackResult.getString("cover"),
                                 user);
                     }
                 }
@@ -177,20 +176,20 @@ public class Tracks_commandeRepo {
         }
 
         // Récupérer l'objet Details_commande associé
-        Details_commande detailsCommande = null;
+        Detail_commande detailsCommande = null;
         try (PreparedStatement detailsStmt = connection
                 .prepareStatement("SELECT * FROM details_commande WHERE id_details_commande = ?")) {
             detailsStmt.setInt(1, detailsCommandeId);
             ResultSet detailsResult = detailsStmt.executeQuery();
             if (detailsResult.next()) {
-                detailsCommande = new Details_commande(
+                detailsCommande = new Detail_commande(
                         detailsResult.getInt("id_details_commande"),
                         detailsResult.getString("commande"),
                         null, detailsResult.getDate("date_commande").toLocalDate(), null);
             }
         }
 
-        return new Tracks_commande(
+        return new Track_commande(
                 result.getInt("id_tracks_commande"),
                 licenceTrack,
                 detailsCommande);

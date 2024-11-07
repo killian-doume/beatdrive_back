@@ -4,19 +4,19 @@ import jakarta.validation.constraints.NotBlank;
 
 public class Licence_track {
 
-    private Integer id_licence_tracks;
+    private Integer id_licence_track;
     @NotBlank
     private String type;
     @NotBlank
     private String prix;
-    private Tracks tracks;
+    private Track track;
 
-    public Integer getId_licence_tracks() {
-        return id_licence_tracks;
+    public Integer getId_licence_track() {
+        return id_licence_track;
     }
 
-    public void setId_licence_tracks(Integer id_licence_tracks) {
-        this.id_licence_tracks = id_licence_tracks;
+    public void setId_licence_track(Integer id_licence_track) {
+        this.id_licence_track = id_licence_track;
     }
 
     public String getType() {
@@ -35,28 +35,28 @@ public class Licence_track {
         this.prix = prix;
     }
 
-    public Tracks getTracks() {
-        return tracks;
+    public Track getTrack() {
+        return track;
     }
 
-    public void setTracks(Tracks tracks) {
-        this.tracks = tracks;
+    public void setTrack(Track track) {
+        this.track = track;
     }
 
     public Licence_track() {
     }
 
-    public Licence_track(@NotBlank String type, @NotBlank String prix, Tracks tracks) {
+    public Licence_track(@NotBlank String type, @NotBlank String prix, Track track) {
         this.type = type;
         this.prix = prix;
-        this.tracks = tracks;
+        this.track = track;
     }
 
-    public Licence_track(Integer id_licence_tracks, @NotBlank String type, @NotBlank String prix, Tracks tracks) {
-        this.id_licence_tracks = id_licence_tracks;
+    public Licence_track(Integer id_licence_track, @NotBlank String type, @NotBlank String prix, Track track) {
+        this.id_licence_track = id_licence_track;
         this.type = type;
         this.prix = prix;
-        this.tracks = tracks;
+        this.track = track;
     }
 
 }

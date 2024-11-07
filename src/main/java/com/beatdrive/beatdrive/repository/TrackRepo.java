@@ -12,19 +12,20 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.beatdrive.beatdrive.entity.Tracks;
+import com.beatdrive.beatdrive.entity.Track;
 import com.beatdrive.beatdrive.entity.User;
 
 @Repository
-public class TracksRepo {
+public class TrackRepo {
 
     @Autowired
     private DataSource dataSource;
 
-    public List<Tracks> findAll() {
-        List<Tracks> list = new ArrayList<>();
+    public List<Track> findAll() {
+        List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tracks");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user;");
             ResultSet result = stmt.executeQuery();
 
             while (result.next()) {
@@ -37,10 +38,11 @@ public class TracksRepo {
         return list;
     }
 
-    public List<Tracks> findLast(int limit) {
-        List<Tracks> list = new ArrayList<>();
+    public List<Track> findLast(int limit) {
+        List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tracks ORDER BY date DESC LIMIT ?");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user ORDER BY track.date DESC LIMIT ?; ");
             stmt.setInt(1, limit);
             ResultSet result = stmt.executeQuery();
 
@@ -54,9 +56,10 @@ public class TracksRepo {
         return list;
     }
 
-    public Tracks findById(int id) {
+    public Track findById(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tracks WHERE id_tracks = ?");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user WHERE track.id_track = ?;");
             stmt.setInt(1, id);
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
@@ -68,10 +71,11 @@ public class TracksRepo {
         return null;
     }
 
-    public List<Tracks> findByGenre(String genre) {
-        List<Tracks> list = new ArrayList<>();
+    public List<Track> findByGenre(String genre) {
+        List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tracks WHERE genre = ?");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user WHERE track.genre = ?;");
             stmt.setString(1, genre);
             ResultSet result = stmt.executeQuery();
 
@@ -87,7 +91,7 @@ public class TracksRepo {
 
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM tracks WHERE id_tracks = ?");
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM track WHERE id_track = ?");
             stmt.setInt(1, id);
             int result = stmt.executeUpdate();
             return result > 0;
@@ -97,10 +101,10 @@ public class TracksRepo {
         return false;
     }
 
-    public boolean persist(Tracks track) {
+    public boolean persist(Track track) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO tracks (titre, date, bpm, description, cle, genre, type, audio, status, `like`, cover, users_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO tracks (titre, date, bpm, description, cle, genre, type, audio, status, cover, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, track.getTitre());
             stmt.setObject(2, track.getDate());
@@ -110,15 +114,14 @@ public class TracksRepo {
             stmt.setString(6, track.getGenre());
             stmt.setString(7, track.getType());
             stmt.setString(8, track.getAudio());
-            stmt.setString(9, track.getStatus());
-            stmt.setString(10, track.getLike());
+            stmt.setString(9, track.getStatut());
             stmt.setString(11, track.getCover());
-            stmt.setInt(12, track.getUsers().getId_user());
+            stmt.setInt(12, track.getUser().getId_user());
 
             if (stmt.executeUpdate() > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                    track.setId_tracks(rs.getInt(1));
+                    track.setId_track(rs.getInt(1));
                     return true;
                 }
             }
@@ -129,8 +132,8 @@ public class TracksRepo {
         return false;
     }
 
-    private Tracks sqlToTracks(ResultSet result, Connection connection) throws SQLException {
-        int userId = result.getInt("users_id");
+    private Track sqlToTracks(ResultSet result, Connection connection) throws SQLException {
+        int userId = result.getInt("id_user");
         User user = null;
         try (PreparedStatement userStmt = connection.prepareStatement("SELECT * FROM user WHERE id_user = ?")) {
             userStmt.setInt(1, userId);
@@ -151,8 +154,8 @@ public class TracksRepo {
             }
         }
 
-        return new Tracks(
-                result.getInt("id_tracks"),
+        return new Track(
+                result.getInt("id_track"),
                 result.getString("titre"),
                 result.getObject("date", LocalDateTime.class),
                 result.getString("bpm"),
@@ -161,8 +164,7 @@ public class TracksRepo {
                 result.getString("genre"),
                 result.getString("type"),
                 result.getString("audio"),
-                result.getString("status"),
-                result.getString("like"),
+                result.getString("statut"),
                 result.getString("cover"),
                 user);
     }

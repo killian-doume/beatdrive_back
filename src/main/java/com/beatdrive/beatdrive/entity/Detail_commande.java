@@ -3,7 +3,7 @@ package com.beatdrive.beatdrive.entity;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
-public class Details_commande {
+public class Detail_commande {
     private int id_detail_commande;
     @NotBlank
     private String prix_total;
@@ -52,17 +52,17 @@ public class Details_commande {
         this.users = users;
     }
 
-    public Details_commande() {
+    public Detail_commande() {
     }
 
-    public Details_commande(@NotBlank String prix_total, @NotBlank String nombre_total, LocalDate date, User users) {
+    public Detail_commande(@NotBlank String prix_total, @NotBlank String nombre_total, LocalDate date, User users) {
         this.prix_total = prix_total;
         this.nombre_total = nombre_total;
         this.date = date;
         this.users = users;
     }
 
-    public Details_commande(int id_detail_commande, @NotBlank String prix_total, @NotBlank String nombre_total,
+    public Detail_commande(int id_detail_commande, @NotBlank String prix_total, @NotBlank String nombre_total,
             LocalDate date, User users) {
         this.id_detail_commande = id_detail_commande;
         this.prix_total = prix_total;

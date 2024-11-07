@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.beatdrive.beatdrive.entity.Licence_track;
-import com.beatdrive.beatdrive.entity.Tracks;
+import com.beatdrive.beatdrive.entity.Track;
 import com.beatdrive.beatdrive.entity.User;
 
 @Repository
@@ -90,12 +90,12 @@ public class Licence_trackRepo {
                     PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, licenceTrack.getType());
             stmt.setString(2, licenceTrack.getPrix());
-            stmt.setInt(3, licenceTrack.getTracks().getId_tracks());
+            stmt.setInt(3, licenceTrack.getTrack().getId_track());
 
             if (stmt.executeUpdate() > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                    licenceTrack.setId_licence_tracks(rs.getInt(1));
+                    licenceTrack.setId_licence_track(rs.getInt(1));
                     return true;
                 }
             }
@@ -109,7 +109,7 @@ public class Licence_trackRepo {
     private Licence_track sqlToLicenceTrack(ResultSet result, Connection connection) throws SQLException {
         int trackId = result.getInt("tracks_id");
 
-        Tracks track = null;
+        Track track = null;
         try (PreparedStatement trackStmt = connection.prepareStatement("SELECT * FROM tracks WHERE id_tracks = ?")) {
             trackStmt.setInt(1, trackId);
             ResultSet trackResult = trackStmt.executeQuery();
@@ -136,21 +136,21 @@ public class Licence_trackRepo {
                     }
                 }
 
-                track = new Tracks(
-                        trackResult.getInt("id_tracks"),
-                        trackResult.getString("titre"),
-                        trackResult.getObject("date", LocalDateTime.class),
-                        trackResult.getString("bpm"),
-                        trackResult.getString("description"),
-                        trackResult.getString("cle"),
-                        trackResult.getString("genre"),
-                        trackResult.getString("type"),
-                        trackResult.getString("audio"),
-                        trackResult.getString("status"),
-                        trackResult.getString("like"),
-                        trackResult.getString("cover"),
+                track = new Track(
+                        result.getInt("id_track"),
+                        result.getString("titre"),
+                        result.getObject("date", LocalDateTime.class),
+                        result.getString("bpm"),
+                        result.getString("description"),
+                        result.getString("cle"),
+                        result.getString("genre"),
+                        result.getString("type"),
+                        result.getString("audio"),
+                        result.getString("statut"),
+                        result.getString("cover"),
                         user);
             }
+
         }
 
         return new Licence_track(
