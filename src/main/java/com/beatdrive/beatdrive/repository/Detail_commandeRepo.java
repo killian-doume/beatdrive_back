@@ -79,6 +79,25 @@ public class Detail_commandeRepo {
         return false;
     }
 
+    public boolean update(Detail_commande detailCommande) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "UPDATE detail_commande SET prix_total = ?, nombre_total = ?, date = ?, id_user = ? WHERE id_detail_commande = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setString(1, detailCommande.getPrix_total());
+            stmt.setString(2, detailCommande.getNombre_total());
+            stmt.setObject(3, detailCommande.getDate());
+            stmt.setInt(4, detailCommande.getUsers().getId_user());
+            stmt.setInt(5, detailCommande.getId_detail_commande());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la mise à jour de la commande", e);
+        }
+    }
+
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection

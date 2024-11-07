@@ -132,6 +132,32 @@ public class TrackRepo {
         return false;
     }
 
+    public boolean update(Track track) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "UPDATE track SET titre = ?, date = ?, bpm = ?, description = ?, cle = ?, genre = ?, type = ?, audio = ?, statut = ?, cover = ?, id_user = ? WHERE id_track = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setString(1, track.getTitre());
+            stmt.setObject(2, track.getDate());
+            stmt.setString(3, track.getBpm());
+            stmt.setString(4, track.getDescription());
+            stmt.setString(5, track.getCle());
+            stmt.setString(6, track.getGenre());
+            stmt.setString(7, track.getType());
+            stmt.setString(8, track.getAudio());
+            stmt.setString(9, track.getStatut());
+            stmt.setString(10, track.getCover());
+            stmt.setInt(11, track.getUser().getId_user());
+            stmt.setInt(12, track.getId_track());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la mise à jour du track", e);
+        }
+    }
+
     private Track sqlToTracks(ResultSet result, Connection connection) throws SQLException {
         int userId = result.getInt("id_user");
         User user = null;
