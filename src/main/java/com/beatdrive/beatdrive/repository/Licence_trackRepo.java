@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class Licence_trackRepo {
     public List<Licence_track> findAll() {
         List<Licence_track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM licence_tracks");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track;");
             ResultSet result = stmt.executeQuery();
 
             while (result.next()) {
@@ -41,7 +43,8 @@ public class Licence_trackRepo {
     public Licence_track findById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection
-                    .prepareStatement("SELECT * FROM licence_tracks WHERE id_licence_tracks = ?");
+                    .prepareStatement(
+                            "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track WHERE licence_track.id_licence_track = ?;");
             stmt.setInt(1, id);
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
@@ -56,7 +59,8 @@ public class Licence_trackRepo {
     public List<Licence_track> findByType(String type) {
         List<Licence_track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM licence_tracks WHERE type = ?");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track WHERE licence_track.type = ?;");
             stmt.setString(1, type);
             ResultSet result = stmt.executeQuery();
 
@@ -73,7 +77,7 @@ public class Licence_trackRepo {
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection
-                    .prepareStatement("DELETE FROM licence_tracks WHERE id_licence_tracks = ?");
+                    .prepareStatement("DELETE FROM licence_track WHERE id_licence_track = ?");
             stmt.setInt(1, id);
             int result = stmt.executeUpdate();
             return result > 0;
@@ -86,7 +90,7 @@ public class Licence_trackRepo {
     public boolean persist(Licence_track licenceTrack) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO licence_tracks (type, prix, tracks_id) VALUES (?, ?, ?)",
+                    "INSERT INTO licence_track (type, prix, id_track) VALUES (?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, licenceTrack.getType());
             stmt.setString(2, licenceTrack.getPrix());
@@ -107,16 +111,16 @@ public class Licence_trackRepo {
     }
 
     private Licence_track sqlToLicenceTrack(ResultSet result, Connection connection) throws SQLException {
-        int trackId = result.getInt("tracks_id");
+        int trackId = result.getInt("id_track");
 
         Track track = null;
-        try (PreparedStatement trackStmt = connection.prepareStatement("SELECT * FROM tracks WHERE id_tracks = ?")) {
+        try (PreparedStatement trackStmt = connection.prepareStatement("SELECT * FROM track WHERE id_track = ?")) {
             trackStmt.setInt(1, trackId);
             ResultSet trackResult = trackStmt.executeQuery();
             if (trackResult.next()) {
 
                 User user = null;
-                int userId = trackResult.getInt("users_id");
+                int userId = trackResult.getInt("id_user");
                 try (PreparedStatement userStmt = connection.prepareStatement("SELECT * FROM user WHERE id_user = ?")) {
                     userStmt.setInt(1, userId);
                     ResultSet userResult = userStmt.executeQuery();
@@ -154,7 +158,7 @@ public class Licence_trackRepo {
         }
 
         return new Licence_track(
-                result.getInt("id_licence_tracks"),
+                result.getInt("id_licence_track"),
                 result.getString("type"),
                 result.getString("prix"),
                 track);

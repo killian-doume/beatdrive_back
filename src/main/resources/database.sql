@@ -1,4 +1,3 @@
--- Active: 1712233503625@@127.0.0.1@3306@beatdrive
 -- Suppression des tables si elles existent déjà pour éviter des erreurs lors de la création
 DROP TABLE IF EXISTS Track_Commande;
 DROP TABLE IF EXISTS Detail_Commande;
@@ -38,13 +37,13 @@ CREATE TABLE Track (
     FOREIGN KEY (id_user) REFERENCES User(id_user)
 );
 
--- Création de la table Licence_Track
+-- Création de la table Licence_Track avec ON DELETE CASCADE pour supprimer les licences liées à un Track
 CREATE TABLE Licence_Track (
     id_licence_track INT AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(255) NOT NULL,
     prix VARCHAR(255),
     id_track INT,
-    FOREIGN KEY (id_track) REFERENCES Track(id_track)
+    FOREIGN KEY (id_track) REFERENCES Track(id_track) ON DELETE CASCADE
 );
 
 -- Création de la table Detail_Commande
@@ -57,12 +56,12 @@ CREATE TABLE Detail_Commande (
     FOREIGN KEY (id_user) REFERENCES User(id_user)
 );
 
--- Création de la table Track_Commande
+-- Création de la table Track_Commande avec ON DELETE CASCADE pour supprimer les commandes liées à une Licence
 CREATE TABLE Track_Commande (
     id_track_commande INT AUTO_INCREMENT PRIMARY KEY,
     id_licence_track INT,
     id_detail_commande INT,
-    FOREIGN KEY (id_licence_track) REFERENCES Licence_Track(id_licence_track),
+    FOREIGN KEY (id_licence_track) REFERENCES Licence_Track(id_licence_track) ON DELETE CASCADE,
     FOREIGN KEY (id_detail_commande) REFERENCES Detail_Commande(id_detail_commande)
 );
 

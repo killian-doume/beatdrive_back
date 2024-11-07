@@ -2,8 +2,8 @@ package com.beatdrive.beatdrive.entity;
 
 public class Track_commande {
     private Integer id_track_commande;
-    private Licence_track Licence_tracks;
-    private Detail_commande Details_commande;
+    private Licence_track Licence_track;
+    private Detail_commande Detail_commande;
 
     public Integer getId_track_commande() {
         return id_track_commande;
@@ -13,34 +13,36 @@ public class Track_commande {
         this.id_track_commande = id_track_commande;
     }
 
-    public Licence_track getLicence_tracks() {
-        return Licence_tracks;
+    public Licence_track getLicence_track() {
+        return Licence_track;
     }
 
-    public void setLicence_tracks(Licence_track licence_tracks) {
-        Licence_tracks = licence_tracks;
+    public void setLicence_track(Licence_track licence_track) {
+        Licence_track = licence_track;
     }
 
-    public Detail_commande getDetails_commande() {
-        return Details_commande;
+    public Detail_commande getDetail_commande() {
+        return Detail_commande;
     }
 
-    public void setDetails_commande(Detail_commande details_commande) {
-        Details_commande = details_commande;
-    }
-
-    public Track_commande(Licence_track licence_tracks, Detail_commande details_commande) {
-        Licence_tracks = licence_tracks;
-        Details_commande = details_commande;
+    public void setDetail_commande(Detail_commande detail_commande) {
+        Detail_commande = detail_commande;
     }
 
     public Track_commande() {
     }
 
-    public Track_commande(Integer id_track_commande, Licence_track licence_tracks, Detail_commande details_commande) {
+    public Track_commande(com.beatdrive.beatdrive.entity.Licence_track licence_track,
+            com.beatdrive.beatdrive.entity.Detail_commande detail_commande) {
+        Licence_track = licence_track;
+        Detail_commande = detail_commande;
+    }
+
+    public Track_commande(Integer id_track_commande, com.beatdrive.beatdrive.entity.Licence_track licence_track,
+            com.beatdrive.beatdrive.entity.Detail_commande detail_commande) {
         this.id_track_commande = id_track_commande;
-        Licence_tracks = licence_tracks;
-        Details_commande = details_commande;
+        Licence_track = licence_track;
+        Detail_commande = detail_commande;
     }
 
 }

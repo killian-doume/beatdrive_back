@@ -25,34 +25,11 @@ public class Track_commandeRepo {
     @Autowired
     private DataSource dataSource;
 
-    // CREATE
-    public boolean persist(Track_commande tracksCommande) {
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO tracks_commande (licence_tracks_id, details_commande_id) VALUES (?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, tracksCommande.getLicence_tracks().getId_licence_track());
-            stmt.setInt(2, tracksCommande.getDetails_commande().getId_detail_commande());
-
-            if (stmt.executeUpdate() > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    tracksCommande.setId_track_commande(rs.getInt(1));
-                    return true;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erreur lors de l'insertion d'une commande de track", e);
-        }
-        return false;
-    }
-
-    // READ ALL
     public List<Track_commande> findAll() {
         List<Track_commande> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM tracks_commande");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT track_commande.*, licence_track.type, detail_commande.prix_total FROM track_commande JOIN licence_track ON track_commande.id_licence_track = licence_track.id_licence_track JOIN detail_commande ON track_commande.id_detail_commande = detail_commande.id_detail_commande;");
             ResultSet result = stmt.executeQuery();
 
             while (result.next()) {
@@ -65,11 +42,11 @@ public class Track_commandeRepo {
         return list;
     }
 
-    // READ BY ID
     public Track_commande findById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection
-                    .prepareStatement("SELECT * FROM tracks_commande WHERE id_tracks_commande = ?");
+                    .prepareStatement(
+                            "SELECT track_commande.*, licence_track.type, detail_commande.prix_total FROM track_commande JOIN licence_track ON track_commande.id_licence_track = licence_track.id_licence_track JOIN detail_commande ON track_commande.id_detail_commande = detail_commande.id_detail_commande WHERE track_commande.id_track_commande = ?;");
             stmt.setInt(1, id);
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
@@ -81,13 +58,12 @@ public class Track_commandeRepo {
         return null;
     }
 
-    // UPDATE
     public boolean update(Track_commande tracksCommande) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "UPDATE tracks_commande SET licence_tracks_id = ?, details_commande_id = ? WHERE id_tracks_commande = ?");
-            stmt.setInt(1, tracksCommande.getLicence_tracks().getId_licence_track());
-            stmt.setInt(2, tracksCommande.getDetails_commande().getId_detail_commande());
+                    "UPDATE track_commande SET id_licence_track = ?, id_detail_commande = ? WHERE id_track_commande = ?");
+            stmt.setInt(1, tracksCommande.getLicence_track().getId_licence_track());
+            stmt.setInt(2, tracksCommande.getDetail_commande().getId_detail_commande());
             stmt.setInt(3, tracksCommande.getId_track_commande());
 
             return stmt.executeUpdate() > 0;
@@ -101,11 +77,33 @@ public class Track_commandeRepo {
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection
-                    .prepareStatement("DELETE FROM tracks_commande WHERE id_tracks_commande = ?");
+                    .prepareStatement("DELETE FROM track_commande WHERE id_track_commande = ?");
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean persist(Track_commande tracksCommande) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO track_commande (id_licence_track,id_detail_commande) VALUES (?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, tracksCommande.getLicence_track().getId_licence_track());
+            stmt.setInt(2, tracksCommande.getDetail_commande().getId_detail_commande());
+
+            if (stmt.executeUpdate() > 0) {
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    tracksCommande.setId_track_commande(rs.getInt(1));
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de l'insertion d'une commande de track", e);
         }
         return false;
     }

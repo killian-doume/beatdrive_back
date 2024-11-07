@@ -104,7 +104,7 @@ public class TrackRepo {
     public boolean persist(Track track) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO tracks (titre, date, bpm, description, cle, genre, type, audio, status, cover, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO track (titre, date, bpm, description, cle, genre, type, audio, status, cover, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, track.getTitre());
             stmt.setObject(2, track.getDate());
