@@ -30,12 +30,12 @@ public class TrackController {
         return track;
     }
 
-    @GetMapping("/api/track/{limit}")
+    @GetMapping("/api/track/limit/{limit}")
     public List<Track> getRecentTracks(@PathVariable int limit) {
         return trackRepo.findLast(limit);
     }
 
-    @GetMapping("/api/track/{genre}")
+    @GetMapping("/api/track/genre/{genre}")
     public List<Track> getTracksByGenre(@PathVariable String genre) {
         return trackRepo.findByGenre(genre);
     }
