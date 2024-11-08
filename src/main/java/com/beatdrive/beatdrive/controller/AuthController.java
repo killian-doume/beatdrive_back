@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import com.beatdrive.beatdrive.entity.User;
-import com.beatdrive.beatdrive.repository.UserRepo.UserRepository;
+import com.beatdrive.beatdrive.repository.UserRepo;
+
 import jakarta.validation.Valid;
 
 @CrossOrigin("*")
@@ -23,7 +24,7 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     @Autowired
-    private UserRepository repo;
+    private UserRepo repo;
 
     @PostMapping("/api/user")
     public User register(@Valid @RequestBody User user) {

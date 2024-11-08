@@ -6,13 +6,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.beatdrive.beatdrive.repository.UserRepo.UserRepository;
+import com.beatdrive.beatdrive.repository.UserRepo;
 
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private UserRepository repo;
+    private UserRepo repo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
