@@ -45,6 +45,12 @@ public class AuthController {
         return repo.findAll();
     }
 
+    @GetMapping("/api/user/{id}")
+    public User getUserById(@PathVariable int id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
     @PutMapping("/api/user/{id}")
     public User updateUser(@PathVariable int id, @Valid @RequestBody User user) {
         if (!repo.findById(id).isPresent()) {
