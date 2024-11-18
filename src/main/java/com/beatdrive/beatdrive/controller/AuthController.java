@@ -1,9 +1,11 @@
 package com.beatdrive.beatdrive.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
 import com.beatdrive.beatdrive.entity.User;
 import com.beatdrive.beatdrive.repository.UserRepo;
 
@@ -25,12 +28,16 @@ public class AuthController {
 
     @Autowired
     private UserRepo repo;
+    @Autowired
+    private PasswordEncoder encoder;
 
     @PostMapping("/api/user")
     public User register(@Valid @RequestBody User user) {
         if (repo.findByEmail(user.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists");
         }
+        // Hache le mot de passe avant de le persister
+        user.setPassword(encoder.encode(user.getPassword()));
         repo.persist(user);
         return user;
     }
