@@ -42,7 +42,7 @@ public class AuthController {
         return user;
     }
 
-    @GetMapping("/api/account")
+    @PostMapping("/api/account")
     public User myAccount(@AuthenticationPrincipal User user) {
         return user;
     }
