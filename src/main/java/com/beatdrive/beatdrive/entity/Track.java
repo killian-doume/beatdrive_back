@@ -1,6 +1,6 @@
 package com.beatdrive.beatdrive.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -9,7 +9,7 @@ public class Track {
     private Integer id_track;
     @NotBlank
     private String titre;
-    private LocalDateTime date;
+    private LocalDate date;
     @NotBlank
     private String bpm;
     private String description;
@@ -43,11 +43,11 @@ public class Track {
         this.titre = titre;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -123,10 +123,7 @@ public class Track {
         this.user = user;
     }
 
-    public Track() {
-    }
-
-    public Track(@NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
+    public Track(@NotBlank String titre, LocalDate date, @NotBlank String bpm, String description,
             @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
             @NotBlank String statut, @NotBlank String cover, User user) {
         this.titre = titre;
@@ -142,7 +139,7 @@ public class Track {
         this.user = user;
     }
 
-    public Track(Integer id_track, @NotBlank String titre, LocalDateTime date, @NotBlank String bpm, String description,
+    public Track(Integer id_track, @NotBlank String titre, LocalDate date, @NotBlank String bpm, String description,
             @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
             @NotBlank String statut, @NotBlank String cover, User user) {
         this.id_track = id_track;
@@ -157,6 +154,9 @@ public class Track {
         this.statut = statut;
         this.cover = cover;
         this.user = user;
+    }
+
+    public Track() {
     }
 
 }

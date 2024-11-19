@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,7 +183,7 @@ public class TrackRepo {
         return new Track(
                 result.getInt("id_track"),
                 result.getString("titre"),
-                result.getObject("date", LocalDateTime.class),
+                result.getDate("date").toLocalDate(),
                 result.getString("bpm"),
                 result.getString("description"),
                 result.getString("cle"),

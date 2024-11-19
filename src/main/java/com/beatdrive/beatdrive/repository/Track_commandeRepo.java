@@ -153,7 +153,7 @@ public class Track_commandeRepo {
                         track = new Track(
                                 trackResult.getInt("id_tracks"),
                                 trackResult.getString("titre"),
-                                trackResult.getObject("date", LocalDateTime.class),
+                                trackResult.getDate("date").toLocalDate(),
                                 trackResult.getString("bpm"),
                                 trackResult.getString("description"),
                                 trackResult.getString("cle"),

@@ -30,11 +30,6 @@ public class Licence_TrackController {
         return licence;
     }
 
-    @GetMapping("/api/licence_track/{type}")
-    public List<Licence_track> getLicencesByType(@PathVariable String type) {
-        return licenceTrackRepo.findByType(type);
-    }
-
     @PostMapping("/api/licence_track")
     public Licence_track createLicence(@RequestBody Licence_track licenceTrack) {
         if (licenceTrackRepo.persist(licenceTrack)) {

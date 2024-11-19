@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class Licence_trackRepo {
         List<Licence_track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track;");
+                    "SELECT * FROM licence_track");
             ResultSet result = stmt.executeQuery();
 
             while (result.next()) {
@@ -159,20 +158,19 @@ public class Licence_trackRepo {
                 }
 
                 track = new Track(
-                        result.getInt("id_track"),
-                        result.getString("titre"),
-                        result.getObject("date", LocalDateTime.class),
-                        result.getString("bpm"),
-                        result.getString("description"),
-                        result.getString("cle"),
-                        result.getString("genre"),
-                        result.getString("type"),
-                        result.getString("audio"),
-                        result.getString("statut"),
-                        result.getString("cover"),
+                        trackResult.getInt("id_track"),
+                        trackResult.getString("titre"),
+                        trackResult.getDate("date") != null ? trackResult.getDate("date").toLocalDate() : null,
+                        trackResult.getString("bpm"),
+                        trackResult.getString("description"),
+                        trackResult.getString("cle"),
+                        trackResult.getString("genre"),
+                        trackResult.getString("type"),
+                        trackResult.getString("audio"),
+                        trackResult.getString("statut"),
+                        trackResult.getString("cover"),
                         user);
             }
-
         }
 
         return new Licence_track(
@@ -181,4 +179,5 @@ public class Licence_trackRepo {
                 result.getString("prix"),
                 track);
     }
+
 }
