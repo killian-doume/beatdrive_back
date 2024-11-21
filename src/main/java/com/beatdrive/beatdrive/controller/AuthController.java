@@ -64,8 +64,21 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         user.setId_user(id);
+        if (repo.updateuser(user)) {
+            return user;
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update user");
+        }
+    }
+
+    @PutMapping("/api/user/mdp/{id}")
+    public User updatemdp(@PathVariable int id, @Valid @RequestBody User user) {
+        if (!repo.findById(id).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        user.setId_user(id);
         user.setPassword(encoder.encode(user.getPassword()));
-        if (repo.update(user)) {
+        if (repo.updateuser(user)) {
             return user;
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update user");

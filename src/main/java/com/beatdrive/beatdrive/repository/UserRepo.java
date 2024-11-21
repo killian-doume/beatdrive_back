@@ -109,22 +109,37 @@ public class UserRepo {
         return false;
     }
 
-    public boolean update(User user) {
+    public boolean updateuser(User user) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "UPDATE user SET nom = ?, prenom = ?, email = ?, password = ?, pseudo = ?, type = ?, adresse_facturation = ?, adresse_livraison = ?, avatar = ?, telephone = ? WHERE id_user = ?";
+            String sql = "UPDATE user SET nom = ?, prenom = ?, email = ?, pseudo = ?, type = ?, adresse_facturation = ?, adresse_livraison = ?, avatar = ?, telephone = ? WHERE id_user = ?";
             PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setString(1, user.getNom());
             stmt.setString(2, user.getPrenom());
             stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPassword());
-            stmt.setString(5, user.getPseudo());
-            stmt.setString(6, user.getType());
-            stmt.setString(7, user.getAdresse_facturation());
-            stmt.setString(8, user.getAdresse_livraison());
-            stmt.setString(9, user.getAvatar());
-            stmt.setString(10, user.getTelephone());
-            stmt.setInt(11, user.getId_user());
+            stmt.setString(4, user.getPseudo());
+            stmt.setString(5, user.getType());
+            stmt.setString(6, user.getAdresse_facturation());
+            stmt.setString(7, user.getAdresse_livraison());
+            stmt.setString(8, user.getAvatar());
+            stmt.setString(9, user.getTelephone());
+            stmt.setInt(10, user.getId_user());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("Repository Error");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updatemdp(User user) {
+        try (Connection connection = dataSource.getConnection()) {
+            String sql = "UPDATE user SET password = ? WHERE id_user = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setString(1, user.getPassword());
+            stmt.setInt(2, user.getId_user());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
