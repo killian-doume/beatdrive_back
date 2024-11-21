@@ -55,6 +55,24 @@ public class Licence_trackRepo {
         return null;
     }
 
+    public List<Licence_track> findByIdTrack(int idTrack) {
+        List<Licence_track> list = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track WHERE licence_track.id_track = ?;");
+            stmt.setInt(1, idTrack);
+            ResultSet result = stmt.executeQuery();
+
+            while (result.next()) {
+                list.add(sqlToLicenceTrack(result, connection));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la récupération des licences par id_track", e);
+        }
+        return list;
+    }
+
     public List<Licence_track> findByType(String type) {
         List<Licence_track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {

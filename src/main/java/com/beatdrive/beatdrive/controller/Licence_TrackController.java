@@ -21,13 +21,22 @@ public class Licence_TrackController {
         return licenceTrackRepo.findAll();
     }
 
-    @GetMapping("/api/licence_track/{id}")
-    public Licence_track getLicenceById(@PathVariable int id) {
-        Licence_track licence = licenceTrackRepo.findById(id);
-        if (licence == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Licence not found");
+    // @GetMapping("/api/licence_track/{id}")
+    // public Licence_track getLicenceById(@PathVariable int id) {
+    // Licence_track licence = licenceTrackRepo.findById(id);
+    // if (licence == null) {
+    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Licence not found");
+    // }
+    // return licence;
+    // }
+
+    @GetMapping("/api/licence_track/{idTrack}")
+    public List<Licence_track> getLicencesByTrackId(@PathVariable int idTrack) {
+        List<Licence_track> licences = licenceTrackRepo.findByIdTrack(idTrack);
+        if (licences.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No licences found for the specified track");
         }
-        return licence;
+        return licences;
     }
 
     @PostMapping("/api/licence_track")
