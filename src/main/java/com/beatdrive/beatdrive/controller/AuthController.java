@@ -44,6 +44,7 @@ public class AuthController {
 
     @PostMapping("/api/account")
     public User myAccount(@AuthenticationPrincipal User user) {
+
         return user;
     }
 
