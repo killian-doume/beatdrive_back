@@ -64,6 +64,7 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         user.setId_user(id);
+        user.setPassword(encoder.encode(user.getPassword()));
         if (repo.update(user)) {
             return user;
         } else {

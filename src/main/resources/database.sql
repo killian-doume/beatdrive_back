@@ -1,3 +1,4 @@
+-- Active: 1712233503625@@127.0.0.1@3306@beatdrive
 -- Suppression des tables si elles existent déjà pour éviter des erreurs lors de la création
 DROP TABLE IF EXISTS Track_Commande;
 DROP TABLE IF EXISTS Detail_Commande;
@@ -11,7 +12,7 @@ CREATE TABLE User (
     nom VARCHAR(255),
     prenom VARCHAR(255),
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) ,
     pseudo VARCHAR(255) NOT NULL,
     type VARCHAR(255) NOT NULL,
     adresse_facturation VARCHAR(255),
