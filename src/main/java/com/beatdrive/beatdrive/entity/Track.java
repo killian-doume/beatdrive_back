@@ -2,6 +2,8 @@ package com.beatdrive.beatdrive.entity;
 
 import java.time.LocalDate;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import jakarta.validation.constraints.NotBlank;
 
 public class Track {
@@ -19,7 +21,6 @@ public class Track {
     private String genre;
     @NotBlank
     private String type;
-    @NotBlank
     private String audio;
     @NotBlank
     private String statut;
@@ -157,6 +158,22 @@ public class Track {
     }
 
     public Track() {
+    }
+
+    public String getLink() {
+        if (cover.startsWith("http")) {
+            return cover;
+        }
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        return baseUrl + "/uploads/" + cover;
+    }
+
+    public String getThumbnailLink() {
+        if (cover.startsWith("http")) {
+            return cover;
+        }
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        return baseUrl + "/uploads/thumbnail-" + cover;
     }
 
 }
