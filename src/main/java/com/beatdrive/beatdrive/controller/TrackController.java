@@ -30,6 +30,15 @@ public class TrackController {
         return track;
     }
 
+    @GetMapping("/api/track/all/{id_user}")
+    public List<Track> getTracksByUserId(@PathVariable int id_user) {
+        List<Track> tracks = trackRepo.findByUserId(id_user); // Méthode du repository pour récupérer tous les tracks
+        if (tracks.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No tracks found for the given user");
+        }
+        return tracks;
+    }
+
     @GetMapping("/api/track/limit/{limit}")
     public List<Track> getRecentTracks(@PathVariable int limit) {
         return trackRepo.findLast(limit);

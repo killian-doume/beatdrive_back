@@ -71,6 +71,25 @@ public class TrackRepo {
         return null;
     }
 
+    public List<Track> findByUserId(int idUser) {
+        List<Track> tracks = new ArrayList<>();
+        String query = "SELECT track.*, User.pseudo " +
+                "FROM track " +
+                "JOIN User ON track.id_user = User.id_user " +
+                "WHERE User.id_user = ?;";
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, idUser); // Utilisation de id_user dans la requête
+            ResultSet result = stmt.executeQuery();
+            while (result.next()) {
+                tracks.add(sqlToTracks(result, connection));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tracks;
+    }
+
     public List<Track> findByGenre(String genre) {
         List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
