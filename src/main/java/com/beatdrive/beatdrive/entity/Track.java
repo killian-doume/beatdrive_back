@@ -11,6 +11,7 @@ public class Track {
     private Integer id_track;
     @NotBlank
     private String titre;
+
     private LocalDate date;
     @NotBlank
     private String bpm;
@@ -21,6 +22,7 @@ public class Track {
     private String genre;
     @NotBlank
     private String type;
+    @NotBlank
     private String audio;
     @NotBlank
     private String statut;

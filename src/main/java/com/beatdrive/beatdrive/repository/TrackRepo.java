@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,7 +124,7 @@ public class TrackRepo {
     public boolean persist(Track track) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO track (titre, date, bpm, description, cle, genre, type, audio, statut, cover, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO track (titre, date, bpm, description, cle, genre, type, audio, status, cover, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, track.getTitre());
             stmt.setObject(2, track.getDate());
@@ -133,9 +134,9 @@ public class TrackRepo {
             stmt.setString(6, track.getGenre());
             stmt.setString(7, track.getType());
             stmt.setString(8, track.getAudio());
-            stmt.setString(9, track.getStatut()); // Vérifiez si `statut` correspond bien au nom de la colonne
-            stmt.setString(10, track.getCover());
-            stmt.setInt(11, track.getUser().getId_user());
+            stmt.setString(9, track.getStatut());
+            stmt.setString(11, track.getCover());
+            stmt.setInt(12, track.getUser().getId_user());
 
             if (stmt.executeUpdate() > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
@@ -199,10 +200,14 @@ public class TrackRepo {
             }
         }
 
+        // Vérification pour gérer les NULL dans la colonne `date`
+        java.sql.Date sqlDate = result.getDate("date");
+        LocalDate localDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
         return new Track(
                 result.getInt("id_track"),
                 result.getString("titre"),
-                result.getDate("date").toLocalDate(),
+                localDate, // Utiliser la date traitée ici
                 result.getString("bpm"),
                 result.getString("description"),
                 result.getString("cle"),
