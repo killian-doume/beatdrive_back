@@ -55,6 +55,28 @@ public class Detail_commandeRepo {
         return null;
     }
 
+    public List<Detail_commande> findByUserId(int idUser) {
+        List<Detail_commande> detailsCommande = new ArrayList<>();
+        String query = "SELECT detail_commande.*, user.pseudo " +
+                "FROM detail_commande " +
+                "JOIN user ON detail_commande.id_user = user.id_user " +
+                "WHERE user.id_user = ?;";
+
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, idUser); // Utilisation de idUser dans la requête
+            ResultSet result = stmt.executeQuery();
+
+            while (result.next()) {
+                detailsCommande.add(sqlToDetailCommande(result, connection));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return detailsCommande;
+    }
+
     public boolean persist(Detail_commande detailCommande) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(

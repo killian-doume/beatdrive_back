@@ -13,18 +13,18 @@ public class Track {
     private String titre;
 
     private LocalDate date;
-    @NotBlank
+
     private String bpm;
     private String description;
-    @NotBlank
+
     private String cle;
-    @NotBlank
+
     private String genre;
-    @NotBlank
+
     private String type;
-    @NotBlank
+
     private String audio;
-    @NotBlank
+
     private String statut;
     @NotBlank
     private String cover;

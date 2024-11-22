@@ -21,13 +21,13 @@ public class Detail_CommandeController {
         return detailCommandeRepo.findAll();
     }
 
-    @GetMapping("/api/detail_commande/{id}")
-    public Detail_commande getDetailCommandeById(@PathVariable int id) {
-        Detail_commande detailCommande = detailCommandeRepo.findById(id);
-        if (detailCommande == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Detail Commande not found");
+    @GetMapping("/api/detail_commande/all/{idUser}")
+    public List<Detail_commande> getDetailsCommandeByUserId(@PathVariable int idUser) {
+        List<Detail_commande> detailsCommande = detailCommandeRepo.findByUserId(idUser);
+        if (detailsCommande.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Detail Commande found for the given user ID");
         }
-        return detailCommande;
+        return detailsCommande;
     }
 
     @PostMapping("/api/detail_commande")
