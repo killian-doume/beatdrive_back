@@ -120,11 +120,19 @@ public class TrackController {
             File coverFile = new File(getUploadFolder("covers"), renamedCover);
             File audioFile = new File(getUploadFolder("audio"), renamedAudio);
 
+            System.out.println("Chemin de sauvegarde des fichiers : " + coverFile.getAbsolutePath());
+            System.out.println("Chemin de sauvegarde des fichiers : " + audioFile.getAbsolutePath());
+
             cover.transferTo(coverFile);
             audio.transferTo(audioFile);
 
-            track.setCover(renamedCover);
-            track.setAudio(renamedAudio);
+            // Génération des URLs publiques
+            String coverUrl = generateFileUrl("covers", renamedCover);
+            String audioUrl = generateFileUrl("audio", renamedAudio);
+
+            // Associer les URLs publiques au track
+            track.setCover(coverUrl);
+            track.setAudio(audioUrl);
         } catch (IOException e) {
             System.out.println("Erreur lors du traitement des fichiers : " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed", e);
@@ -135,8 +143,14 @@ public class TrackController {
         return track;
     }
 
+    private String generateFileUrl(String folder, String fileName) {
+        // URL d'accès public aux fichiers
+        return "http://localhost:8080/uploads/" + folder + "/" + fileName;
+    }
+
     private File getUploadFolder(String type) {
-        String path = getClass().getClassLoader().getResource(".").getPath().concat("static/uploads/" + type);
+        // Chemin absolu vers le répertoire "src/main/resources/static/uploads/{type}"
+        String path = System.getProperty("user.dir") + "/src/main/resources/static/uploads/" + type;
         File folder = new File(path);
         if (!folder.exists()) {
             folder.mkdirs();

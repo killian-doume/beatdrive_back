@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.beatdrive.beatdrive.entity.Track;
-import com.beatdrive.beatdrive.entity.User;
 
 @Repository
 public class TrackRepo {
@@ -208,11 +206,10 @@ public class TrackRepo {
                 result.getString("audio"),
                 result.getString("statut"),
                 result.getString("cover"),
-                result.getInt("id_user"));// Au lieu de `null`
+                result.getInt("id_user"));
 
     }
 
-    // Méthode utilitaire pour loguer les erreurs
     private void logError(String message, Exception e) {
         System.err.println(message);
         e.printStackTrace();

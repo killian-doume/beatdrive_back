@@ -26,7 +26,7 @@ public class Track {
     private String statut;
     @NotBlank
     private String cover;
-    private Integer id_user; // au lieu de l'objet User
+    private Integer id_user;
 
     public Integer getId_track() {
         return id_track;

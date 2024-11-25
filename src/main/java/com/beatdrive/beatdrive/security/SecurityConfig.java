@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .logout(logout -> logout.logoutUrl("/logout"))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/account").authenticated()
                         .anyRequest().permitAll());
