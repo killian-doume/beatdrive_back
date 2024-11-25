@@ -22,6 +22,7 @@ public class TrackRepo {
     @Autowired
     private DataSource dataSource;
 
+    // Récupérer tous les tracks
     public List<Track> findAll() {
         List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
@@ -33,17 +34,18 @@ public class TrackRepo {
                 list.add(sqlToTracks(result, connection));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la récupération des tracks", e);
             throw new RuntimeException("Erreur lors de la récupération des tracks", e);
         }
         return list;
     }
 
+    // Récupérer les derniers tracks
     public List<Track> findLast(int limit) {
         List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
-                    "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user ORDER BY track.date DESC LIMIT ?; ");
+                    "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user ORDER BY track.date DESC LIMIT ?;");
             stmt.setInt(1, limit);
             ResultSet result = stmt.executeQuery();
 
@@ -51,12 +53,13 @@ public class TrackRepo {
                 list.add(sqlToTracks(result, connection));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la récupération des derniers tracks", e);
             throw new RuntimeException("Erreur lors de la récupération des derniers tracks", e);
         }
         return list;
     }
 
+    // Récupérer un track par ID
     public Track findById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(
@@ -67,11 +70,12 @@ public class TrackRepo {
                 return sqlToTracks(result, connection);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la récupération du track avec l'ID : " + id, e);
         }
         return null;
     }
 
+    // Récupérer tous les tracks d'un utilisateur
     public List<Track> findByUserId(int idUser) {
         List<Track> tracks = new ArrayList<>();
         String query = "SELECT track.*, User.pseudo " +
@@ -80,17 +84,18 @@ public class TrackRepo {
                 "WHERE User.id_user = ?;";
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setInt(1, idUser); // Utilisation de id_user dans la requête
+            stmt.setInt(1, idUser);
             ResultSet result = stmt.executeQuery();
             while (result.next()) {
                 tracks.add(sqlToTracks(result, connection));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la récupération des tracks pour l'utilisateur avec l'ID : " + idUser, e);
         }
         return tracks;
     }
 
+    // Récupérer les tracks par genre
     public List<Track> findByGenre(String genre) {
         List<Track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
@@ -103,12 +108,13 @@ public class TrackRepo {
                 list.add(sqlToTracks(result, connection));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la récupération des tracks par genre : " + genre, e);
             throw new RuntimeException("Erreur lors de la récupération des tracks par genre", e);
         }
         return list;
     }
 
+    // Supprimer un track par ID
     public boolean delete(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM track WHERE id_track = ?");
@@ -116,7 +122,7 @@ public class TrackRepo {
             int result = stmt.executeUpdate();
             return result > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la suppression du track avec l'ID : " + id, e);
         }
         return false;
     }
@@ -126,8 +132,9 @@ public class TrackRepo {
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO track (titre, date, bpm, description, cle, genre, type, audio, statut, cover, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS);
+
             stmt.setString(1, track.getTitre());
-            stmt.setObject(2, track.getDate());
+            stmt.setObject(2, track.getDate() != null ? java.sql.Date.valueOf(track.getDate()) : null);
             stmt.setString(3, track.getBpm());
             stmt.setString(4, track.getDescription());
             stmt.setString(5, track.getCle());
@@ -136,7 +143,7 @@ public class TrackRepo {
             stmt.setString(8, track.getAudio());
             stmt.setString(9, track.getStatut());
             stmt.setString(10, track.getCover());
-            stmt.setInt(11, track.getUser().getId_user());
+            stmt.setInt(11, track.getId_user());
 
             if (stmt.executeUpdate() > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
@@ -146,19 +153,19 @@ public class TrackRepo {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erreur lors de l'insertion d'un track", e);
+            throw new RuntimeException("Erreur lors de l'insertion du track", e);
         }
         return false;
     }
 
+    // Mettre à jour un track
     public boolean update(Track track) {
         try (Connection connection = dataSource.getConnection()) {
             String sql = "UPDATE track SET titre = ?, date = ?, bpm = ?, description = ?, cle = ?, genre = ?, type = ?, audio = ?, statut = ?, cover = ?, id_user = ? WHERE id_track = ?";
             PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setString(1, track.getTitre());
-            stmt.setObject(2, track.getDate());
+            stmt.setDate(2, track.getDate() != null ? java.sql.Date.valueOf(track.getDate()) : null);
             stmt.setString(3, track.getBpm());
             stmt.setString(4, track.getDescription());
             stmt.setString(5, track.getCle());
@@ -167,47 +174,32 @@ public class TrackRepo {
             stmt.setString(8, track.getAudio());
             stmt.setString(9, track.getStatut());
             stmt.setString(10, track.getCover());
-            stmt.setInt(11, track.getUser().getId_user());
+            stmt.setInt(11, track.getId_user());
+
             stmt.setInt(12, track.getId_track());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logError("Erreur lors de la mise à jour du track", e);
             throw new RuntimeException("Erreur lors de la mise à jour du track", e);
         }
     }
 
+    // Mapper les résultats SQL vers un objet Track
     private Track sqlToTracks(ResultSet result, Connection connection) throws SQLException {
         int userId = result.getInt("id_user");
-        User user = null;
         try (PreparedStatement userStmt = connection.prepareStatement("SELECT * FROM user WHERE id_user = ?")) {
             userStmt.setInt(1, userId);
             ResultSet userResult = userStmt.executeQuery();
             if (userResult.next()) {
-                user = new User(
-                        userResult.getInt("id_user"),
-                        userResult.getString("nom"),
-                        userResult.getString("prenom"),
-                        userResult.getString("email"),
-                        userResult.getString("password"),
-                        userResult.getString("pseudo"),
-                        userResult.getString("type"),
-                        userResult.getString("adresse_facturation"),
-                        userResult.getString("adresse_livraison"),
-                        userResult.getString("avatar"),
-                        userResult.getString("telephone"));
             }
         }
-
-        // Vérification pour gérer les NULL dans la colonne `date`
-        java.sql.Date sqlDate = result.getDate("date");
-        LocalDate localDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
 
         return new Track(
                 result.getInt("id_track"),
                 result.getString("titre"),
-                localDate, // Utiliser la date traitée ici
+                result.getDate("date").toLocalDate(),
                 result.getString("bpm"),
                 result.getString("description"),
                 result.getString("cle"),
@@ -216,6 +208,13 @@ public class TrackRepo {
                 result.getString("audio"),
                 result.getString("statut"),
                 result.getString("cover"),
-                user);
+                result.getInt("id_user"));// Au lieu de `null`
+
+    }
+
+    // Méthode utilitaire pour loguer les erreurs
+    private void logError(String message, Exception e) {
+        System.err.println(message);
+        e.printStackTrace();
     }
 }

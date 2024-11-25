@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import com.beatdrive.beatdrive.entity.Licence_track;
 import com.beatdrive.beatdrive.entity.Track;
-import com.beatdrive.beatdrive.entity.User;
 
 @Repository
 public class Licence_trackRepo {
@@ -25,8 +24,7 @@ public class Licence_trackRepo {
     public List<Licence_track> findAll() {
         List<Licence_track> list = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "SELECT * FROM licence_track");
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM licence_track");
             ResultSet result = stmt.executeQuery();
 
             while (result.next()) {
@@ -41,9 +39,8 @@ public class Licence_trackRepo {
 
     public Licence_track findById(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement stmt = connection
-                    .prepareStatement(
-                            "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track WHERE licence_track.id_licence_track = ?;");
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT licence_track.*, track.titre FROM licence_track JOIN track ON licence_track.id_track = track.id_track WHERE licence_track.id_licence_track = ?;");
             stmt.setInt(1, id);
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
@@ -153,41 +150,28 @@ public class Licence_trackRepo {
             trackStmt.setInt(1, trackId);
             ResultSet trackResult = trackStmt.executeQuery();
             if (trackResult.next()) {
-
-                User user = null;
+                // Récupération de l'utilisateur lié au morceau
                 int userId = trackResult.getInt("id_user");
                 try (PreparedStatement userStmt = connection.prepareStatement("SELECT * FROM user WHERE id_user = ?")) {
                     userStmt.setInt(1, userId);
                     ResultSet userResult = userStmt.executeQuery();
                     if (userResult.next()) {
-                        user = new User(
-                                userResult.getInt("id_user"),
-                                userResult.getString("nom"),
-                                userResult.getString("prenom"),
-                                userResult.getString("email"),
-                                userResult.getString("password"),
-                                userResult.getString("pseudo"),
-                                userResult.getString("type"),
-                                userResult.getString("adresse_facturation"),
-                                userResult.getString("adresse_livraison"),
-                                userResult.getString("avatar"),
-                                userResult.getString("telephone"));
+                        track = new Track(
+                                trackResult.getInt("id_track"),
+                                trackResult.getString("titre"),
+                                trackResult.getDate("date").toLocalDate(),
+                                trackResult.getString("bpm"),
+                                trackResult.getString("description"),
+                                trackResult.getString("cle"),
+                                trackResult.getString("genre"),
+                                trackResult.getString("type"),
+                                trackResult.getString("audio"),
+                                trackResult.getString("statut"),
+                                trackResult.getString("cover"),
+                                userId // Correction ici pour récupérer `id_user` depuis `trackResult`
+                        );
                     }
                 }
-
-                track = new Track(
-                        trackResult.getInt("id_track"),
-                        trackResult.getString("titre"),
-                        trackResult.getDate("date") != null ? trackResult.getDate("date").toLocalDate() : null,
-                        trackResult.getString("bpm"),
-                        trackResult.getString("description"),
-                        trackResult.getString("cle"),
-                        trackResult.getString("genre"),
-                        trackResult.getString("type"),
-                        trackResult.getString("audio"),
-                        trackResult.getString("statut"),
-                        trackResult.getString("cover"),
-                        user);
             }
         }
 

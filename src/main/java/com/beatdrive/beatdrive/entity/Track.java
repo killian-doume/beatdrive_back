@@ -2,8 +2,6 @@ package com.beatdrive.beatdrive.entity;
 
 import java.time.LocalDate;
 
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import jakarta.validation.constraints.NotBlank;
 
 public class Track {
@@ -28,7 +26,7 @@ public class Track {
     private String statut;
     @NotBlank
     private String cover;
-    private User user;
+    private Integer id_user; // au lieu de l'objet User
 
     public Integer getId_track() {
         return id_track;
@@ -118,17 +116,19 @@ public class Track {
         this.cover = cover;
     }
 
-    public User getUser() {
-        return user;
+    public Integer getId_user() {
+        return id_user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setId_user(Integer id_user) {
+        this.id_user = id_user;
     }
 
-    public Track(@NotBlank String titre, LocalDate date, @NotBlank String bpm, String description,
-            @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
-            @NotBlank String statut, @NotBlank String cover, User user) {
+    public Track() {
+    }
+
+    public Track(@NotBlank String titre, LocalDate date, String bpm, String description, String cle, String genre,
+            String type, String audio, String statut, @NotBlank String cover, Integer id_user) {
         this.titre = titre;
         this.date = date;
         this.bpm = bpm;
@@ -139,12 +139,11 @@ public class Track {
         this.audio = audio;
         this.statut = statut;
         this.cover = cover;
-        this.user = user;
+        this.id_user = id_user;
     }
 
-    public Track(Integer id_track, @NotBlank String titre, LocalDate date, @NotBlank String bpm, String description,
-            @NotBlank String cle, @NotBlank String genre, @NotBlank String type, @NotBlank String audio,
-            @NotBlank String statut, @NotBlank String cover, User user) {
+    public Track(Integer id_track, @NotBlank String titre, LocalDate date, String bpm, String description, String cle,
+            String genre, String type, String audio, String statut, @NotBlank String cover, Integer id_user) {
         this.id_track = id_track;
         this.titre = titre;
         this.date = date;
@@ -156,26 +155,6 @@ public class Track {
         this.audio = audio;
         this.statut = statut;
         this.cover = cover;
-        this.user = user;
+        this.id_user = id_user;
     }
-
-    public Track() {
-    }
-
-    public String getLink() {
-        if (cover.startsWith("http")) {
-            return cover;
-        }
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        return baseUrl + "/uploads/" + cover;
-    }
-
-    public String getThumbnailLink() {
-        if (cover.startsWith("http")) {
-            return cover;
-        }
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        return baseUrl + "/uploads/thumbnail-" + cover;
-    }
-
 }

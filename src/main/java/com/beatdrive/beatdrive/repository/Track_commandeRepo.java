@@ -127,26 +127,12 @@ public class Track_commandeRepo {
                     trackStmt.setInt(1, trackId);
                     ResultSet trackResult = trackStmt.executeQuery();
                     if (trackResult.next()) {
-                        // Récupérer l'utilisateur associé au Track
-                        User user = null;
                         int userId = trackResult.getInt("users_id");
                         try (PreparedStatement userStmt = connection
                                 .prepareStatement("SELECT * FROM user WHERE id_user = ?")) {
                             userStmt.setInt(1, userId);
                             ResultSet userResult = userStmt.executeQuery();
                             if (userResult.next()) {
-                                user = new User(
-                                        userResult.getInt("id_user"),
-                                        userResult.getString("nom"),
-                                        userResult.getString("prenom"),
-                                        userResult.getString("email"),
-                                        userResult.getString("password"),
-                                        userResult.getString("pseudo"),
-                                        userResult.getString("type"),
-                                        userResult.getString("adresse_facturation"),
-                                        userResult.getString("adresse_livraison"),
-                                        userResult.getString("avatar"),
-                                        userResult.getString("telephone"));
                             }
                         }
                         track = new Track(
@@ -161,7 +147,7 @@ public class Track_commandeRepo {
                                 trackResult.getString("audio"),
                                 trackResult.getString("status"),
                                 trackResult.getString("like"),
-                                user);
+                                result.getInt("id_user"));// Au lieu de `null`
                     }
                 }
                 licenceTrack = new Licence_track(
