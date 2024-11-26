@@ -66,25 +66,67 @@ public class TrackController {
         return trackRepo.findByGenre(genre);
     }
 
-    @PutMapping("/api/track/{id}")
-    public ResponseEntity<Track> updateTrack(@PathVariable int id, @RequestBody Track track) {
-        if (trackRepo.findById(id) == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Track not found");
-        }
-        track.setId_track(id);
-        if (trackRepo.update(track)) {
-            return ResponseEntity.ok(track);
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update track");
-        }
-    }
-
     @DeleteMapping("/api/track/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTrack(@PathVariable int id) {
         if (!trackRepo.delete(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Track not found");
         }
+    }
+
+    @PutMapping(value = "/api/track/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Track> updateTrack(
+            @PathVariable int id,
+            @RequestPart("track") String trackJson,
+            @RequestPart(value = "cover", required = false) MultipartFile cover,
+            @RequestPart(value = "audio", required = false) MultipartFile audio) {
+
+        // Vérifier si le track existe
+        Track existingTrack = trackRepo.findById(id);
+        if (existingTrack == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Track not found");
+        }
+
+        // Désérialisation du JSON
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule()); // Supporte LocalDate
+        Track track;
+        try {
+            track = mapper.readValue(trackJson, Track.class);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid track JSON", e);
+        }
+
+        // Mise à jour des fichiers si fournis
+        if (cover != null) {
+            String renamedCover = UUID.randomUUID() + ".jpg";
+            try {
+                File coverFile = new File(getUploadFolder("covers"), renamedCover);
+                cover.transferTo(coverFile);
+                String coverUrl = generateFileUrl("covers", renamedCover);
+                track.setCover(coverUrl); // Met à jour l'URL de la cover
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cover upload failed", e);
+            }
+        }
+
+        if (audio != null) {
+            String renamedAudio = UUID.randomUUID() + ".mp3";
+            try {
+                File audioFile = new File(getUploadFolder("audio"), renamedAudio);
+                audio.transferTo(audioFile);
+                String audioUrl = generateFileUrl("audio", renamedAudio);
+                track.setAudio(audioUrl); // Met à jour l'URL de l'audio
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Audio upload failed", e);
+            }
+        }
+
+        // Mise à jour des champs du track
+        track.setId_track(id);
+        trackRepo.update(track);
+
+        return ResponseEntity.ok(track);
     }
 
     @PostMapping(value = "/api/track", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

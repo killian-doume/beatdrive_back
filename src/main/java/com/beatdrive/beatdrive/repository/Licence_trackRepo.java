@@ -126,13 +126,12 @@ public class Licence_trackRepo {
 
     public boolean update(Licence_track licenceTrack) {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "UPDATE licence_track SET type = ?, prix = ?, id_track = ? WHERE id_licence_track = ?";
+            String sql = "UPDATE licence_track SET type = ?, prix = ? WHERE id_licence_track = ?";
             PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setString(1, licenceTrack.getType());
             stmt.setString(2, licenceTrack.getPrix());
-            stmt.setInt(3, licenceTrack.getTrack().getId_track());
-            stmt.setInt(4, licenceTrack.getId_licence_track());
+            stmt.setInt(3, licenceTrack.getId_licence_track());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
