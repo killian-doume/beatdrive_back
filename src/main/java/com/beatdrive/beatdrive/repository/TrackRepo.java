@@ -57,19 +57,28 @@ public class TrackRepo {
         return list;
     }
 
-    // Récupérer un track par ID
+    // Méthode pour récupérer un track (morceau) à partir de son ID
     public Track findById(int id) {
+        // Établir une connexion à la base de données en utilisant le DataSource
         try (Connection connection = dataSource.getConnection()) {
+            // Préparer une requête SQL pour récupérer le track et le pseudo de
+            // l'utilisateur associé
             PreparedStatement stmt = connection.prepareStatement(
                     "SELECT track.*, User.pseudo FROM track JOIN User ON track.id_user = User.id_user WHERE track.id_track = ?;");
+            // Assigner l'ID du track à la requête SQL
             stmt.setInt(1, id);
+            // Exécuter la requête et récupérer le résultat
             ResultSet result = stmt.executeQuery();
+            // Vérifier si un résultat est trouvé
             if (result.next()) {
+                // Convertir le résultat en un objet Track et le retourner
                 return sqlToTracks(result, connection);
             }
         } catch (SQLException e) {
+            // Gérer les exceptions SQL et enregistrer un message d'erreur dans les logs
             logError("Erreur lors de la récupération du track avec l'ID : " + id, e);
         }
+        // Retourner null si aucun track n'a été trouvé ou en cas d'erreur
         return null;
     }
 
@@ -112,16 +121,25 @@ public class TrackRepo {
         return list;
     }
 
-    // Supprimer un track par ID
+    // Méthode pour supprimer un track (morceau) à partir de son ID
     public boolean delete(int id) {
+        // Établir une connexion à la base de données en utilisant le DataSource
         try (Connection connection = dataSource.getConnection()) {
+            // Préparer une requête SQL pour supprimer un track spécifique par son ID
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM track WHERE id_track = ?");
+            // Assigner l'ID du track à la requête SQL
             stmt.setInt(1, id);
+            // Exécuter la requête et récupérer le nombre de lignes affectées
             int result = stmt.executeUpdate();
+            // Retourner true si une ou plusieurs lignes ont été affectées (le track a été
+            // supprimé)
             return result > 0;
         } catch (SQLException e) {
+            // Gérer les exceptions SQL et enregistrer un message d'erreur dans les logs
             logError("Erreur lors de la suppression du track avec l'ID : " + id, e);
         }
+
+        // Retourner false si la suppression a échoué ou en cas d'erreur
         return false;
     }
 

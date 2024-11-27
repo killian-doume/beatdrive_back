@@ -32,7 +32,6 @@ public class User implements UserDetails {
     private String adresse_facturation;
     private String adresse_livraison;
     private String avatar;
-    @NotBlank
     private String telephone;
 
     public Integer getId_user() {
