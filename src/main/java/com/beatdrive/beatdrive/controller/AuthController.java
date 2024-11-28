@@ -38,9 +38,10 @@ public class AuthController {
     @Autowired
     private PasswordEncoder encoder;
 
+    // Définition d'un endpoint HTTP POST pour l'URL /api/account
     @PostMapping("/api/account")
     public User myAccount(@AuthenticationPrincipal User user) {
-
+        // Retourne directement l'utilisateur authentifié
         return user;
     }
 
